@@ -361,6 +361,9 @@ We have now created an animation from a simple line chart in R.
 This type of work flow is indeed applicable to any time we want to create plot, annotate, and animate a line chart. 
 Hopefully now, when you see a COVID-19 related chart, you will also be interested on how to replicate it and why not, animate it.
 
+Beware that these data are updated continuously and the input file format may change (file name or even column names).
+I would suggest you to check the [github page of the John Hopkins University](https://github.com/CSSEGISandData/COVID-19) from time to time, to both see what data is available and if the file names changed.
+
 
 
 
