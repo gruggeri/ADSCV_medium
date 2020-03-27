@@ -6,8 +6,8 @@ output: github_document
 
 In the last months, many examples on how to plot timeseries of COVID-19 confirmed cases can be found all over the web and you might be overloaded by the amount of data visualisations that each day are shared on any possible platform.
 It is indeed hard, for any passionate in data visualisation to not want to plot the data yourself.
-For this reason, in this article, we will go through the necessary steps to create a timeseries plot with R, inspired from the many examples that can be found on the web: from the Financial Times, [the New York Times](https://www.nytimes.com/interactive/2020/03/21/upshot/coronavirus-deaths-by-country.html) and the Economist and so on.
-In this chart, the number cases since the 150th case is plotted, for each country.
+For this reason, in this article we will go through the necessary steps to create a timeseries plot with R, inspired from the many examples that can be found on the web: from the Financial Times, [the New York Times](https://www.nytimes.com/interactive/2020/03/21/upshot/coronavirus-deaths-by-country.html) and the Economist and so on.
+In this chart, the number cases since the 150th case are plotted, for each country.
 As a second step we will then animate the chart, always in R, using the package `{gganimate}`.
 
 ![](illustrations/illustrations.001.png)
@@ -15,7 +15,7 @@ As a second step we will then animate the chart, always in R, using the package 
 
 ## Importing the data and the libraries
 
-The data was imported from the [data repository  of the John Hopkins University](https://github.com/CSSEGISandData/COVID-19), which collects data from local governments and the World Health Organization.
+We will import the data from the [data repository  of the John Hopkins University](https://github.com/CSSEGISandData/COVID-19), which collects data from local governments and the World Health Organization.
 
 As a very first step in our R script or R notebook, we will want to import all the libraries that we use in this little exercise. We start by the omnipresent `{tidyverse}`, which allows us to load `{readr}`, `{tidyr}`, `{dplyr}` and `{ggplot2}` that we will use to import, manipulate and plot the data.
 `{lubridate}` is our package of choice for working with variables that store dates values, `{janitor}` is used to clean the column names. `{rcartocolor}` contains some very nice color scales, useful for cartography and not only, then we use `{gganimate}` to finally animate the chart.
@@ -37,19 +37,20 @@ We can now import the data directly from the continuously updated dataset by the
 cases_raw <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 ```
 
-In order to recreate the chart, inspired by John Burn-Murdoch work, we need to tidy the data first, and then do some basic manipulation on it. 
-Since each column corresponds to the different dates, the first thing to do would be to transform the data from wide format to long format: for this we use the `pivot_longer()` function from the `{tidyr}` package. 
 
 ```{r}
 names(cases_raw)
 ```
+In order to recreate the chart, inspired by John Burn-Murdoch work, we need to tidy the data first, and then do some basic manipulation on it. 
+Since each column corresponds to the different dates, the first thing to do would be to transform the data from wide format to long format: for this we use the `pivot_longer()` function from the `{tidyr}` package. 
 
-We even tried to be smart here, and select for our pivoting, only the columns that are named as a date in the following format "digit/digit/digit".
-The new column `date` needs to be transformed into a date column, and for doing it we can use the smart `mdy()` function from the `{lubridate}` package: where `m` stands for *month*, `d` stands for `day` and `y` stands for `year`.
+We will evan try to be smart here, and select for our pivoting, only the columns that are named as a date in the following format "digit/digit/digit".
+The new column `date` will need to be transformed into a date column, and for doing it we can use the smart `mdy()` function from the `{lubridate}` package: where `m` stands for *month*, `d` stands for *day* and `y` stands for *year*.
 
-In the rest of the script we keep only those `country_regions` that we want to plot. We also filter out the China data because it is a bit off scale compared to the other countries, but this may not be valid in few weeks time, given the unfortunately fast pace at which the pandemic spreads.
+In the rest of the script we will only keep those `country_regions` that we want to plot. We also filter out the China data because it is a bit off scale compared to the other countries, but this may not be valid in few weeks time, given the unfortunately fast pace at which the pandemic spreads.
 
-In the `country_region` column some countries are reported by subregions, but we want only one value per day per country. We therefore use the `group_by()` and `summarise()` to make sure that we have only one value per day per country, which corresponds to the sum of cases of all the regions in each country.
+In the `country_region` column, some countries are reported by subregions but we actually want only one value per day per country.
+We will therefore use the `group_by()` and `summarise()` to make sure that we have only one value per day per country, which corresponds to the sum of cases of all the regions in each country.
 
 
 ```{r}
@@ -70,9 +71,9 @@ Now `cases_data` starts looking tidy (one row per country per date and just one 
 head(cases_data)
 ```
 
-If we just wanted to plot the raw timeseries, this would be enough. We although want to go a bit further than this and plot the dates since the 100th case in each country.
-We also want to keep only the countries that reached the 100th case from less than 6 days.
-Still by group, we can calculate the days since the 100th case and after this we can `ungroup()` the data.
+If we just wanted to plot the raw timeseries, this would be enough. We although want to go a bit further than this and plot the dates since the 150th case in each country.
+We also want to keep only the countries that reached the 150th case from more than 9 days, just to not have an overcrowded chart.
+By group, we will then again calculate the days since the 150th case and for good practice we will then `ungroup()` the data.
 
 ```{r}
 cases_data <- cases_data %>% 
@@ -83,8 +84,9 @@ cases_data <- cases_data %>%
   ungroup()
 ```
 
-Many visualisations that can be found on the web or in newspapers, overlap to the country trends a dashed line that corresponds to the 33% daily rise. We then add it to our original `tibble` (which is just another way to say table in `tidyverse` language).
-We also create a new variable `line_type` that we will use to set the line corresponding to the `33% daily rise` to be a dashed line, in our plot.
+Many visualisations that can be found on the web or in newspapers, overlap to the country trends a dashed line that corresponds to the 33% daily rise. 
+We will then add it to our original `tibble` (which is just another way to say table in `tidyverse` language).
+We will also create a new variable `line_type` that we will use to set the line corresponding to the `33% daily rise` to be a dashed line, in our plot.
 
 ```{r}
 cases_data <- cases_data %>% 
@@ -97,9 +99,9 @@ cases_data <- cases_data %>%
 ```
 
 Now we can do our first attempt at plotting, using the `{ggplot2}` library.
-We map the `color` aesthetic to the `country_region` column.
+For doing it, we will map the `color` aesthetic to the `country_region` column.
 This will apply a different color to each country (in the chosen color scale).
-Beware that most categorical color scales do not have more than 12 colors.
+Beware that most categorical color scales do not have more than 12 colors, therefore the last color of the scale will be repeated for as many times necessary to cover all the extra countries.
 We also transform the y-axis to a logarithmic scale, using `scale_y_log10()`.
 The rest of the code is done to set a color scale and to set a theme to the plot, as well as all the annotations.
 
@@ -150,7 +152,7 @@ cases_data <- cases_data %>%
 
 `fct_infreq()` orders the factors by their frequency.
 The countries will be therefore ordered by the number of corresponding observations (rows) in the country.
-Countries that have more rows (more days since the 100th case) will come first.
+Countries that have more rows (more days since the 150th case) will come first.
 We can now plot again the data, using the same code as before.
 
 ```{r message=FALSE, warning=FALSE}
@@ -235,6 +237,7 @@ How can we cope with this?
 
 The way to do it is to manually set the colour of the countries, and then order the countries in the reverse order, compared to the one that we used before.
 A little hacky trick, indeed.
+The hex values corresponding to the colors were taken directly from the [carto.com](https://carto.com/carto-colors/) webpage. 
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -355,7 +358,7 @@ anim_save("covid.gif")
 ```
 
 We have now created an animation from a simple line chart in R.
-This type of workflow is indeed applicable to anytime we want to create plot, annotate, and animate a line chart. 
+This type of work flow is indeed applicable to any time we want to create plot, annotate, and animate a line chart. 
 Hopefully now, when you see a COVID-19 related chart, you will also be interested on how to replicate it and why not, animate it.
 
 
