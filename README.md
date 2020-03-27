@@ -385,8 +385,9 @@ ggplot(data = cases_data,
        caption = "<span style = 'font-size:8pt;color:#888888'>Data Source: Local Governments <br> John Hopkins University,<br> World Health Organization </span>")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- --> \#\#
-Animating the plot
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+## Animating the plot
 
 How do we animate the plot? Luckily, the developers of the `{gganimate}`
 package thought about us and made the animation very easy to implement

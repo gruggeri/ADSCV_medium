@@ -302,6 +302,8 @@ ggplot(data = cases_data,
        caption = "<span style = 'font-size:8pt;color:#888888'>Data Source: Local Governments <br> John Hopkins University,<br> World Health Organization </span>")
 
 ```
+
+
 ## Animating the plot
 
 How do we animate the plot?
