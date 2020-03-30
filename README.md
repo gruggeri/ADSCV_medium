@@ -70,7 +70,7 @@ names(cases_raw)
     ## [57] "3/14/20"        "3/15/20"        "3/16/20"        "3/17/20"       
     ## [61] "3/18/20"        "3/19/20"        "3/20/20"        "3/21/20"       
     ## [65] "3/22/20"        "3/23/20"        "3/24/20"        "3/25/20"       
-    ## [69] "3/26/20"        "3/27/20"        "3/28/20"
+    ## [69] "3/26/20"        "3/27/20"        "3/28/20"        "3/29/20"
 
 In order to recreate the chart, inspired by John Burn-Murdoch work, we
 need to tidy the data first, and then do some basic manipulation on it.
