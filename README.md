@@ -1,8 +1,8 @@
 
 # From static to animated timeseries: the R way
 
-In recent months there have examples of how to plot timeseries of COVID-19
-confirmed cases all over the web and you might be overloaded by the amount of data visualisations that are shared each day
+In recent months there have been examples of how to plot timeseries of COVID-19
+confirmed cases all over the web, and you might be overloaded by the amount of data visualisations that are shared each day
 on every possible platform. It is indeed difficult for anyone passionate about data
 visualisation to not want to plot the data yourself. For this reason, in
 this article we will go through the steps necessary to create a
