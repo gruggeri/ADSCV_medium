@@ -1,7 +1,6 @@
 
 # From static to animated timeseries: the R way
 
-<<<<<<< HEAD
 In recent months there have been examples of how to plot timeseries of
 COVID-19 confirmed cases all over the web, and you might be overloaded
 by the amount of data visualisations that are shared each day on every
@@ -9,14 +8,6 @@ possible platform. It is indeed difficult for anyone passionate about
 data visualisation to not want to plot the data yourself. For this
 reason, in this article we will go through the steps necessary to create
 a timeseries plot with R, inspired by the many examples that can be
-=======
-In recent months there have been examples of how to plot timeseries of COVID-19
-confirmed cases all over the web, and you might be overloaded by the amount of data visualisations that are shared each day
-on every possible platform. It is indeed difficult for anyone passionate about data
-visualisation to not want to plot the data yourself. For this reason, in
-this article we will go through the steps necessary to create a
-timeseries plot with R, inspired by the many examples that can be
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 found on the web: from the Financial Times, [the New York
 Times](https://www.nytimes.com/interactive/2020/03/21/upshot/coronavirus-deaths-by-country.html)
 and the Economist and so on. In this chart, the number cases since the
@@ -36,17 +27,10 @@ import all the libraries that we use in this little exercise. We start
 with the omnipresent `{tidyverse}`, which allows us to load `{readr}`,
 `{tidyr}`, `{dplyr}` and `{ggplot2}` that we will use to import,
 manipulate and plot the data. `{lubridate}` is our package of choice for
-<<<<<<< HEAD
 working with variables that store dates’ values, and `{janitor}` is used
 to clean the column names. `{rcartocolor}` contains some very nice color
 scales, useful for cartography and more, and finally, we use
 `{gganimate}` to animate the chart.
-=======
-working with variables that store dates' values, and `{janitor}` is used to
-clean the column names. `{rcartocolor}` contains some very nice color
-scales, useful for cartography and more, and finally, we use `{gganimate}`
-to animate the chart.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 library(tidyverse)
@@ -58,13 +42,8 @@ library(rcartocolor)
 
 ![](illustrations/illustrations.002.png)
 
-<<<<<<< HEAD
 We can now import the data directly from the dataset, which is
 continuously updated by John Hopkins University, shared on Github.
-=======
-We can now import the data directly from the dataset, which is continuously updated
-by John Hopkins University, shared on Github.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 cases_raw <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
@@ -92,7 +71,6 @@ names(cases_raw)
     ## [61] "3/18/20"        "3/19/20"        "3/20/20"        "3/21/20"       
     ## [65] "3/22/20"        "3/23/20"        "3/24/20"        "3/25/20"       
     ## [69] "3/26/20"        "3/27/20"        "3/28/20"        "3/29/20"       
-<<<<<<< HEAD
     ## [73] "3/30/20"        "3/31/20"        "4/1/20"         "4/2/20"        
     ## [77] "4/3/20"         "4/4/20"         "4/5/20"         "4/6/20"        
     ## [81] "4/7/20"         "4/8/20"         "4/9/20"         "4/10/20"       
@@ -100,11 +78,6 @@ names(cases_raw)
     ## [89] "4/15/20"
 
 In order to recreate the chart, inspired by John Burn-Murdoch’s work, we
-=======
-    ## [73] "3/30/20"        "3/31/20"        "4/1/20"         "4/2/20"
-
-In order to recreate the chart, inspired by John Burn-Murdoch's work, we
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 need to tidy the data first, and then do some basic manipulation of it.
 Since each column corresponds to the different dates, the first thing to
 do would be to transform the data from wide format to long format: for
@@ -113,7 +86,6 @@ this we use the `pivot_longer()` function from the `{tidyr}` package.
 We will also try to be smart here, and select for our pivoting only the
 columns that are named as a date in the following format:
 “digit/digit/digit”. The new column `date` will need to be transformed
-<<<<<<< HEAD
 into a date column, and to do this we can use the smart `mdy()` function
 from the `{lubridate}` package: where `m` stands for *month*, `d` stands
 for *day* and `y` stands for *year*.
@@ -123,28 +95,12 @@ we want to plot. We will also filter out the China data because it is a
 bit off scale compared to the other countries, but this may not be valid
 in few weeks time, given the unfortunately fast pace at which the
 pandemic has spread.
-=======
-into a date column, and to do this we can use the smart `mdy()`
-function from the `{lubridate}` package: where `m` stands for *month*,
-`d` stands for *day* and `y` stands for *year*.
-
-In the rest of the script we will keep only those `country_regions` that
-we want to plot. We will also filter out the China data because it is a bit
-off scale compared to the other countries, but this may not be valid in
-few weeks time, given the unfortunately fast pace at which the pandemic has
-spread.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 In the `country_region` column, some countries are reported by
 subregions but we actually want only one value per day per country. We
 will therefore use the `group_by()` and `summarise()` to make sure that
-<<<<<<< HEAD
 this is the case, and that this corresponds to the sum of cases in all
 the regions in each country.
-=======
-this is the case, and that this corresponds to the sum
-of cases in all the regions in each country.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 cases_data <- cases_raw %>%
@@ -158,13 +114,8 @@ cases_data <- cases_raw %>%
   summarise(cases = sum(cases))
 ```
 
-<<<<<<< HEAD
 Now `cases_data` is beginning to looking tidy (one row per country per
 date and just one column storing the cases) - what a joy for the eyes\!
-=======
-Now `cases_data` is beginning to looking tidy (one row per country per date and
-just one column storing the cases) - what a joy for the eyes!
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 head(cases_data)
@@ -181,20 +132,12 @@ head(cases_data)
     ## 5 Afghanistan    2020-01-26     0
     ## 6 Afghanistan    2020-01-27     0
 
-<<<<<<< HEAD
 If we just wanted to plot the raw timeseries, this would be enough.
 However, we want to go a bit further than this and plot the dates since
 the 150th case in each country. We also want to keep only the countries
 that reached the 150th case from more than 9 days, so as not to have an
 overcrowded chart. By group, we will again calculate the days since the
 150th case and for good practice we will then `ungroup()` the data.
-=======
-If we just wanted to plot the raw timeseries, this would be enough. However, we want to go a bit further than this and plot the dates since the
-150th case in each country. We also want to keep only the countries that
-reached the 150th case from more than 9 days, so as not to have an
-overcrowded chart. By group, we will again calculate the days since
-the 150th case and for good practice we will then `ungroup()` the data.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 cases_data <- cases_data %>% 
@@ -205,15 +148,9 @@ cases_data <- cases_data %>%
   ungroup()
 ```
 
-<<<<<<< HEAD
 Many visualisations that can be found on the web or in newspapers add to
 the country trend lines a dashed line that corresponds to the 33% daily
 rise. We will then add it to our original `tibble` (which is just
-=======
-Many visualisations that can be found on the web or in newspapers
-add to the country trend lines a dashed line that corresponds to the 33%
-daily rise. We will then add it to our original `tibble` (which is just
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 another way to say table in `tidyverse` language). We will also create a
 new variable `line_type` that we will use to set the line corresponding
 to the `33% daily rise` to be a dashed line, in our plot.
@@ -233,18 +170,11 @@ library. To do this, we will map the `color` aesthetic to the
 `country_region` column. This will apply a different color to each
 country (in the chosen color scale). Beware that most categorical color
 scales do not have more than 12 colors, therefore the last color of the
-<<<<<<< HEAD
 scale will be repeated for as many times as is necessary to cover all
 the extra countries. We will also transform the y-axis to a logarithmic
 scale, using `scale_y_log10()`. The rest of the code is done to set a
 color scale and to set a theme to the plot, as well as all the
 annotations.
-=======
-scale will be repeated for as many times as is necessary to cover all the
-extra countries. We will also transform the y-axis to a logarithmic scale,
-using `scale_y_log10()`. The rest of the code is done to set a color
-scale and to set a theme to the plot, as well as all the annotations.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 ggplot(data = cases_data, 
@@ -357,11 +287,7 @@ annotations <- cases_data %>%
 Now we are ready to annotate the plot. To increase the visibility of the
 labels we can use `geom_shadowtext()` from the `{shadowtext}` package,
 which adds a subtle little 3d look, which makes the labels stand out a
-<<<<<<< HEAD
 little bit. As we all know, the devil is in the details\!
-=======
-little bit. As we all know, the devil is in the details!
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 ggplot(data = cases_data, 
@@ -401,17 +327,10 @@ this, we would need to reorder the `country_region` factors again, but
 this would affect the way the the lines are coloured. How can we cope
 with this?
 
-<<<<<<< HEAD
 The way to do it is to manually set the color of the countries, and then
 order the countries in the reverse order from the one we used before. A
 little hacky trick, indeed. The hex values corresponding to the colors
 were taken directly from the
-=======
-The way to do it is to manually set the color of the countries, and
-then order the countries in the reverse order from the one
-we used before. A little hacky trick, indeed. The hex values
-corresponding to the colors were taken directly from the
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 [carto.com](https://carto.com/carto-colors/) webpage.
 
 ``` r
@@ -482,19 +401,11 @@ ggplot(data = cases_data,
 
 How do we animate the plot? Luckily, the developers of the `{gganimate}`
 package thought about us and made the animation very easy to implement
-<<<<<<< HEAD
 to any chart created using `{ggplot2}`. We really need to add one
 function: `transition_reveal()`. This will allow us to reveal the lines
 along the x-axis, one day at the time. For the animation, we will not
 use the `annotation` dataset anymore, as we want to have the annotation
 to appear at each point of the chart.
-=======
-to any chart created using `{ggplot2}`. We really need to
-add one function: `transition_reveal()`. This will allow us to reveal
-the lines along the x-axis, one day at the time. For the animation, we
-will not use the `annotation` dataset anymore, as we want to have the
-annotation to appear at each point of the chart.
->>>>>>> 2354d2133fd1b7fdae9455f58e343c422cdb27c5
 
 ``` r
 ggplot(data = cases_data, 
