@@ -75,7 +75,7 @@ names(cases_raw)
     ## [77] "4/3/20"         "4/4/20"         "4/5/20"         "4/6/20"        
     ## [81] "4/7/20"         "4/8/20"         "4/9/20"         "4/10/20"       
     ## [85] "4/11/20"        "4/12/20"        "4/13/20"        "4/14/20"       
-    ## [89] "4/15/20"
+    ## [89] "4/15/20"        "4/16/20"
 
 In order to recreate the chart, inspired by John Burn-Murdoch’s work, we
 need to tidy the data first, and then do some basic manipulation of it.
@@ -159,7 +159,7 @@ to the `33% daily rise` to be a dashed line, in our plot.
 cases_data <- cases_data %>% 
   bind_rows(
     tibble(country_region = "33% daily rise", 
-           days_since_150 = 0:25) %>%
+           days_since_150 = 0:28) %>%
       mutate(cases = 150*1.33^days_since_150)
   ) %>% 
   mutate(line_type = ifelse(country_region == "33% daily rise", "2", "1")) 
