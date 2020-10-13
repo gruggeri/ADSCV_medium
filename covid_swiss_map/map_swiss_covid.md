@@ -1,21 +1,26 @@
-Making a map of COVID-19 incidence in Switzerland, with {ggplot2}
+Making a map of COVID-19 incidence in Switzerland using {ggplot2} and
+`{sf}`
 ================
 
-In this article, we are going to visualise the spatial distribution of
-COVID-19 incidence, in the last 14 days, in Switzerland. In the last
-article, we have explored how to visualise COVID-19 time series data,
-and we have animated the visualisation using `{gganimate}`.
+In the past years, creating beautiful maps in R has become fairly
+simple, thanks to the `{sf}` package. In this article, we are going to
+visualise the spatial distribution of COVID-19 incidence, in the last 14
+days in Switzerland, by creating a thematic map, also known as
+*choropleth* map. Previously, we had explored how to visualise and
+animate COVID-19 time series data, using `{ggplot2}` and `{gganimate}`.
 
-This time, we are going to rely on `{sf}` and `{ggplot2}`.
+This time, we are going to rely on `{sf}` and `{ggplot2}` as our main
+tools.
 
-`{sf}`, which stands for simple feature, is the library that we are
-using to deal with spatial vectorial data, which is data that describes
-geographical geometries as a series of points, whose coordinates are the
-*longitude* and the *latitude*. This package is the go-to tool for
-importing, manipulating and plotting this kind of data.
+`{sf}`, which stands for simple feature, is the go-to library to deal
+with spatial vectorial data, which is data that describes geographical
+geometries as a series of points, that are described by their
+*longitude* and the *latitude* coordinates. It allows for importing,
+manipulating and plotting geographical shapes, letting us deal with data
+in table-like format, just like a data.frame. Such a relief\!
 
-We are using `{readxl}` to import the excel file, downloaded from the
-[Swiss Federal Office of Public Health
+In this little exercise, we are using `{readxl}` to import the excel
+file, downloaded from the [Swiss Federal Office of Public Health
 Website](https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html).
 `{rcartocolor}` is the R library that includes nice looking colour
 scales, that have been developed for cartography. As David Letterman
@@ -29,14 +34,16 @@ library(readxl)
 ```
 
 Let’s start loading the data, using `read_excel()`, in which we can
-define the exact name of the `sheet` that we want to load, how many line
-we can `skip` and how many lines we want to `keep`. We have one row per
-canton and a row for the title, which means that we need to keep only 27
-rows (the Swiss cantons are 26).
+define the exact name of the `sheet` that we want to load, how many
+lines we may `skip` and how many lines we want to `keep` overall. We
+have one row per canton and a row for the title, which means that we
+need to keep only 27 rows (the Swiss cantons are 26).
 
 We also clean a bit the column names using the `clean_names` from the
-`{janitor}` package and using `transmute` to rename the wanted columns
-and drop the others.
+`{janitor}` package and use `transmute` to rename the wanted columns and
+drop the others.
+
+> Until now, simple data import and manipulation.
 
 ``` r
 covid_incidence <- read_excel("resources/200325_dati di base_grafica_COVID-19-rapporto.xlsx", 
@@ -71,13 +78,13 @@ We have now one variable which contains the canton codes, and one
 variable that contains the incidence per 100’000, by canton, of COVID-19
 in the last 14 days.
 
-We are now ready to load the shapefiles.
+We are now ready to load the **shapefiles**.
 
 > Wait, what are the shapefiles?
 
-Shapefiles, are the files that contain the shapes that we want to plot.
-We want to plot the cantonal data, so we need to get the swiss cantons
-shapes, which can be downloaded from
+Shapefiles, are the files that contain the geographical shapes that we
+want to plot. We want to plot the cantonal data, so we need to get the
+swiss cantons shapes, which can be downloaded from
 [here](https://www.bfs.admin.ch/bfs/en/home/services/geostat/swiss-federal-statistics-geodata/administrative-boundaries/generalized-boundaries-local-regional-authorities.html).
 
 Shapefiles are actually a set of files, which contain different
@@ -86,28 +93,17 @@ the `.shp` extension and this is the one that we are going to load.
 
 > Beware that you need to have all the other files in the same folder.
 
-Now we can therefore load 3 shapefiles, one that contains the swiss
-border shape, one that containts the shape of the major lakes of
-Switzerland and one that contains the swiss cantons.
+Now we can therefore load 2 shapefiles, one that contains the shapes of
+the canton borders and one that contains the shape of the major lakes of
+Switzerland.
 
 Let’s load them and see how they look like.
-
-``` r
-swiss_border <- st_read("resources/g2l15.shp")
-```
-
-    ## Reading layer `g2l15' from data source `/Users/gruggeri/Documents/ADSCV/Social_media/resources/g2l15.shp' using driver `ESRI Shapefile'
-    ## Simple feature collection with 1 feature and 12 fields
-    ## geometry type:  POLYGON
-    ## dimension:      XY
-    ## bbox:           xmin: 485411 ymin: 75286.54 xmax: 833837.9 ymax: 295933.8
-    ## projected CRS:  CH1903 / LV03
 
 ``` r
 swiss_lakes <- st_read("resources/g2s15.shp")
 ```
 
-    ## Reading layer `g2s15' from data source `/Users/gruggeri/Documents/ADSCV/Social_media/resources/g2s15.shp' using driver `ESRI Shapefile'
+    ## Reading layer `g2s15' from data source `/Users/gruggeri/Documents/ADSCV/medium_articles/ADSCV_medium/covid_swiss_map/resources/g2s15.shp' using driver `ESRI Shapefile'
     ## Simple feature collection with 22 features and 9 fields
     ## geometry type:  MULTIPOLYGON
     ## dimension:      XY
@@ -118,7 +114,7 @@ swiss_lakes <- st_read("resources/g2s15.shp")
 swiss_cantons <- st_read("resources/G1K09.shp")
 ```
 
-    ## Reading layer `G1K09' from data source `/Users/gruggeri/Documents/ADSCV/Social_media/resources/G1K09.shp' using driver `ESRI Shapefile'
+    ## Reading layer `G1K09' from data source `/Users/gruggeri/Documents/ADSCV/medium_articles/ADSCV_medium/covid_swiss_map/resources/G1K09.shp' using driver `ESRI Shapefile'
     ## Simple feature collection with 26 features and 3 fields
     ## geometry type:  MULTIPOLYGON
     ## dimension:      XY
@@ -131,12 +127,13 @@ class(swiss_cantons)
 
     ## [1] "sf"         "data.frame"
 
-`swiss_cantons`, like the other data that we have just loaded, are
-stored in an `sf data.frame`, so we can manipulate it just like we
-manipulate tibbles (or data.frames) and it stores the geometries in a
-very tidy way: as a nested variable usually called `geometry`. This will
-be your only *special* variable, the others (that are called attributes)
-will just be normal variables.
+`swiss_cantons` and `swiss_lakes`, are stored as `sf data.frame`s, so we
+can manipulate them just like we manipulate tibbles (or data.frames).
+This is possible because geometries are stored in a very tidy way: as a
+nested variable usually called `geometry`. This will be your only
+*special* variable, the others (that are called attributes) will just be
+normal variables. For instance, each canton as its name and code
+associated to the geometry that describes it.
 
 ``` r
 head(swiss_cantons)
@@ -165,11 +162,13 @@ ggplot()+
 
 ![](map_swiss_covid_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-And, just like with any `{ggplot2}` chart, we can keep using our
-thinking layer by layer, and apply custom themes. Let’s now add the
-Swiss lakes on top of the canton shapes and use `theme_void()` to remove
-the background and the axis. In this step, we can also remove the fill
-from the cantons and add a light blue fill on the lakes.
+And, just like with any `{ggplot2}` chart, we can reason layer by layer
+when building map. Let’s now add the Swiss lakes on top of the canton
+shapes and use `theme_void()` to remove the background and the axis. In
+this step, we can also make the cantons transparent by setting the
+`fill` argument to NA and add a light teal colour fill the lakes.
+`geom_sf()` indeed works just like any other `geom_` function, no alarms
+and no surprises here.
 
 ``` r
 ggplot()+
@@ -180,9 +179,11 @@ ggplot()+
 
 ![](map_swiss_covid_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-Now, how to colour each canton by the shape of COVID-19 incidence? We
-just need to merge the `covid_incidence` tibble and `swiss_cantons`
-table together, using the canton code as merging variable. This will
+Now, how to colour each canton by the magnitude of COVID-19 incidence
+per 100’000 people?
+
+We just need to join the `covid_incidence` tibble and `swiss_cantons`
+table together, using the canton code as joining variable. This will
 allow us to map the variable incidence to the `fill` aesthetic and
 create a **choropleth** map, i.e. a thematic map.
 
@@ -195,8 +196,9 @@ To make our map look pretty, instead of using a numerical variable we
 divide the incidence into categories, so that it will be easier for the
 user to see in which category each canton is.
 
-This a typical practice for choropleth maps, in this case we although
-choose the categories manually.
+This a typical practice for choropleth maps, and it can be done in
+different ways, in this case we decide for a brut-force approach, we do
+it manually.
 
 ``` r
 swiss_cantons <- swiss_cantons %>% 
@@ -209,7 +211,8 @@ swiss_cantons <- swiss_cantons %>%
   mutate(incidence_cat = factor(incidence_cat, levels = c("0-50", "51-100","101-150","151-200","251-300")))
 ```
 
-Now we can map the colour to the `incidence_cat` variable\!
+Now we can map the colour to the `incidence_cat` variable and create the
+first choropleth map.
 
 ``` r
 ggplot(swiss_cantons) +
@@ -241,7 +244,6 @@ ggplot(swiss_cantons) +
             byrow = T,
             label.position = "bottom")) +
   geom_sf(data = swiss_lakes, fill = "#d1eeea", color = "#d1eeea")+
-  geom_sf(data = swiss_border, fill= NA)+
   theme_void() +
   theme(legend.title = element_blank(),
         legend.position = "bottom") 
@@ -290,6 +292,19 @@ ggplot(swiss_cantons) +
 
 ![](map_swiss_covid_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-We have seen now how to create a choropleth map, step by step using
-`{ggplot2}` and we have seen also how to customize it to make it look
-exactly how we want it to be.
+We have now the code to create a choropleth map and we have seen how to
+build it step by step using `{ggplot2}`. With a little bit of
+customisation we have now a static map that we save in different format
+and share.
+
+If you are interested in how to deal with geographical data, one of the
+best freely available resource is the [geocomputation with R
+book](https://geocompr.robinlovelace.net). The authors of the book rely
+heavily of different packages for plotting thematic maps, namely
+`{tmap}`, which is also worth exploring. If you want to use packages
+such as `{ggtext}` to customise your plots, `{ggplot2}` is the library
+that you want to rely on, especially if you are already used to work
+with it.
+
+I hope you enjoyed this article and stay tuned for more example on how
+to build maps in R.
