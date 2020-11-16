@@ -128,7 +128,7 @@ to the `33% daily rise` to be a dashed line, in our plot.
 cases_data <- cases_data %>% 
   bind_rows(
     tibble(country_region = "33% daily rise", 
-           days_since_150 = 0:28) %>%
+           days_since_150 = 0:30) %>%
       mutate(cases = 150*1.33^days_since_150)
   ) %>% 
   mutate(line_type = ifelse(country_region == "33% daily rise", "2", "1")) 
@@ -340,9 +340,10 @@ ggplot(data = cases_data,
   geom_line(mapping = aes(linetype = line_type), 
             size = 0.7, alpha =0.9) +
   scale_x_continuous(limits = c(0, max(cases_data$days_since_150) +6))+
-  scale_y_log10(expand = expansion(add = c(0,0.1)), 
-                breaks=c(150, 500, 2000,  10000, 60000, 500000)) +
-  theme_minimal() +
+  scale_y_log10(expand = expansion(add = c(0,0.1)),
+                labels = scales::label_number()) +
+  #theme_minimal() +
+  hrbrthemes::theme_ft_rc()+
   scale_color_identity()+
   shadowtext::geom_shadowtext(data = annotations, 
                               mapping = aes(x = days_since_150, 
@@ -385,7 +386,7 @@ ggplot(data = cases_data,
             size = 0.7, alpha =0.9) +
   scale_x_continuous(limits = c(0, max(cases_data$days_since_150) +6))+
   scale_y_log10(expand = expansion(add = c(0,0.1)), 
-                breaks=c(150, 500, 2000,  10000, 60000)) +
+                labels = scales::label_number()) +
   theme_minimal() +
   scale_color_identity()+
   # we change the data to cases_data
@@ -393,7 +394,8 @@ ggplot(data = cases_data,
                               mapping = aes(x = days_since_150, 
                                             y = cases, 
                                             label = country_label),
-                              hjust=-0.1, vjust = 0, bg.color = "white") +
+                              hjust=-0.1, vjust = 0, bg.color = "white",
+                              size =6) +
   theme(
     panel.grid.minor = element_blank(),
     legend.position = "none",
@@ -406,7 +408,10 @@ ggplot(data = cases_data,
        title = "Total number of COVID-19 cases",
        subtitle =  "Outside of China",
        caption = "<span style = 'font-size:8pt;color:#888888'>Data Source: Local Governments <br> John Hopkins University,<br> World Health Organization </span>") +
-  transition_reveal(days_since_150) 
+    theme(plot.title = element_text(size = 20),
+        text = element_text(size=20))+
+  transition_reveal(days_since_150)
+
 
 ```
 
